@@ -12,6 +12,6 @@ class DokumenPendaftar extends Model
     protected $guarded = [];
 
     public function pendaftar() {
-        return $this-> belongsTo(Pendaftar::class, 'pendaftar_id', 'id');
+        return $this-> belongsTo(Pendaftar::class, 'pendaftar_id', 'id');   
     }
 }

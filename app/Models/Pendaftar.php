@@ -49,6 +49,6 @@ class Pendaftar extends Model
 
 
     public function dokumenPendaftars() {
-        return $this->hasMany(DokumenPendaftar::class, 'pendaftar_id', 'id');
+        return $this->hasMany(DokumenPendaftar::class, 'pendaftar_id', 'id');   
     }
 }

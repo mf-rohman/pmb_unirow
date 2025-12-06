@@ -9,11 +9,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "barryvdh/laravel-dompdf": "^3.1",
         "filament/filament": "^3.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/octane": "^2.13",
         "laravel/sanctum": "^3.3",
+        "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.8"
     },
     "require-dev": {    

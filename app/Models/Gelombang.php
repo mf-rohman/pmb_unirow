@@ -11,6 +11,12 @@ class Gelombang extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+        'tanggal_mulai' => 'date',
+        'tanggal_selesai' => 'date',
+    ];
+
     public function pendaftars () {
         return $this->hasMany(Pendaftar::class, 'gelombang_id', 'id');
     }
