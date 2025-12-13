@@ -8,10 +8,12 @@ use App\Models\JalurPendaftaran;
 use App\Models\Pendaftar;
 use App\Models\ProgramStudi;
 use App\Models\Province;
+use App\Models\Token;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Arr;
 
 class FormulirController extends Controller
 {
@@ -47,6 +49,7 @@ class FormulirController extends Controller
 
     public function store (Request $request) {
         
+
         $validate = $request->validate([
             'jalur_pendaftaran_id' => 'required|exists:jalur_pendaftarans,id',
             'program_studi_id_1' => 'required|exists:program_studis,kode_prodi',
@@ -78,25 +81,56 @@ class FormulirController extends Controller
             'nilai_rapor_x_2' => 'nullable|numeric|between:0,100',
             'nilai_rapor_xi_1' => 'nullable|numeric|between:0,100',
             'nilai_rapor_xi_2' => 'nullable|numeric|between:0,100',
+            'token_bk' => 'nullable|string',
         ]);
+
+        $tokenData = null;
+        if ($request->filled('token_bk')) {
+            $kode = $request->token_bk;
+
+            $tokenData = Token::where('kode', $kode)->first();
+
+            if(!$tokenData) {
+                return back()->withInput()->withErrors(['token_bk' => 'Token tidak ditemukan / salah']);
+            }
+
+            if($tokenData->is_used) {
+                return back()->withInput()->withErrors(['token_bk' => 'Token sudah terpaki']);
+            }
+
+            if($tokenData->expired_at < now()) {
+                return back()-> withInput()->withErrors(['token_data' => 'Token ini sudah kadaluarsa']);
+            }
+        }
 
         $gelombangAktif = Gelombang::where('is_active', true)->firstOrFail();
 
-        DB::transaction(function() use ($validate, $gelombangAktif){
+        DB::transaction(function() use ($validate, $gelombangAktif, $tokenData){
+            $user = Auth::user();
             $prodi = ProgramStudi::with('fakultas')->find($validate['program_studi_id_1']);
             $kodeFakultas = $prodi->fakultas->kode_fakultas;
             $kodeProdi = $prodi->kode_prodi;
             $tahun = now()->format('Y');
 
-            Pendaftar::create([
+            $dataBersih = Arr::except($validate, ['token_bk']);
+
+            $pendaftar = Pendaftar::create([
                 'user_id' => Auth::id(),
                 'gelombang_id' => $gelombangAktif->id,
                 'email' => Auth::user()->email,
                 'no_pendaftaran'=> 'MABA-' . Auth::user()->id . $tahun . '-' . $kodeFakultas . $kodeProdi,
                 'status' => 'baru',
 
-                ...$validate
+                ...$dataBersih
             ]);
+
+            if($tokenData) {
+                $tokenData->update([
+                    'is_used' => true,
+                    'used_at' => now(),
+                    'pendaftar_id' => $pendaftar->id, 
+                ]);
+            }
         });
 
         return redirect()->route('dashboard')->with('success', 'Pendaftaran berhasil! Silakan upload dokumen pendukung.');
@@ -236,5 +270,44 @@ class FormulirController extends Controller
         $pdf->setPaper('a4', 'potrait');
 
         return $pdf->stream('Kartu-Peserta-' . $pendaftar->no_pendaftaran . '.pdf');
+    }
+
+    public function checkToken (Request $request) {
+        $kode = $request->query('kode');
+
+        if (!$kode) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Token Kosong'
+            ]);
+        }
+
+        $token = Token::where('kode', $kode)->first();
+
+        if(!$token) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Token tidak valid / tidak ditemukan'
+            ]);
+        }
+
+        if($token->is_used) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Token ini sudah terpakai'
+            ]);
+        }
+
+        if($token->expired_at < now()) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Token Kadaluarsa'
+            ]);
+        }
+
+        return response()->json([
+            'valid' => true,
+            'message' => 'Token Valid! (Guru BK: ' . ($token->nama_guru_bk ?? 'Tidak Diketahui') . ' )'
+        ]);
     }
 }

@@ -72,10 +72,74 @@
 
 
             <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-50">
+
+                <!-- SECTION KHUSUS: TOKEN GURU BK / REKOMENDASI -->
+                <!-- ============================================= -->
+                <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-50" x-data="{  viaGuru: false }">
+                    <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                        <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center   justify-center text-purple-500 font-bold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24  24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"    d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2   2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Jalur Khusus / Rekomendasi</h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Checkbox Toggle -->
+                        <label class="inline-flex items-center cursor-pointer select-none">
+                            <input type="checkbox" x-model="viaGuru" class="rounded border-gray-300     text-[#5D5FEF] shadow-sm focus:border-[#5D5FEF] focus:ring focus:ring-  [#5D5FEF] focus:ring-opacity-50">
+                            <span class="ml-3 text-gray-700 font-bold">Saya mendaftar melalui Guru  BK / Koordinator Sekolah</span>
+                        </label>
+
+                        <!-- Panel Input Token (Muncul jika dicentang) -->
+                        <div x-show="viaGuru" x-transition.opacity.duration.300ms class="mt-4 p-6   bg-purple-50 rounded-2xl border border-purple-100">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Masukkan Kode     Token</label>
+
+                            <div class="relative max-w-md">
+                                <!-- Input Token dengan Event Listener -->
+                                <input type="text" 
+                                       name="token_bk" 
+                                       x-model="tokenInput" 
+                                       @input.debounce.500ms="checkTokenStatus()"
+                                       class="w-full rounded-xl border-gray-200 uppercase tracking-[0.  2em] font-bold text-center text-lg transition-all focus:ring-2    focus:ring-[#5D5FEF] focus:border-[#5D5FEF]"
+                                       :class="{
+                                           'border-red-500 focus:ring-red-500 focus:border-red-500':    tokenStatus === 'invalid', 
+                                           'border-green-500 focus:ring-green-500   focus:border-green-500': tokenStatus === 'valid'
+                                       }"
+                                       placeholder="KODE-123">
+
+                                <!-- Icon Loading -->
+                                <div x-show="isLoadingToken" class="absolute right-4 top-3.5"   style="display: none;">
+                                    <svg class="animate-spin h-5 w-5 text-purple-600" xmlns="http://    www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle    class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"    stroke-width="4"></circle><path class="opacity-75"     fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0    12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.  938l3-2.647z"></path></svg>
+                                </div>
+
+                                <!-- Icon Valid (Centang) -->
+                                <div x-show="tokenStatus === 'valid' && !isLoadingToken"    class="absolute right-4 top-3.5 text-green-500" style="display: none;  ">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0   0 24 24"><path stroke-linecap="round" stroke-linejoin="round"     stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+
+                                <!-- Icon Invalid (Silang) -->
+                                <div x-show="tokenStatus === 'invalid' && !isLoadingToken"  class="absolute right-4 top-3.5 text-red-500" style="display: none;">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0   0 24 24"><path stroke-linecap="round" stroke-linejoin="round"     stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </div>
+                            </div>
+
+                            <!-- Pesan Feedback di Bawah Input -->
+                            <p x-show="tokenMessage" x-text="tokenMessage" 
+                               class="text-sm mt-3 font-bold transition-all"
+                               :class="tokenStatus === 'valid' ? 'text-green-600' : 'text-red-600'"
+                               style="display: none;"></p>
+
+                            <p class="text-xs text-gray-500 mt-2 italic">*Kode token bisa didapatkan    dari Guru BK sekolah Anda.</p>
+                        </div>
+                    </div>
+                </div>
+                
+
                 <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
                     <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-[#5D5FEF] font-bold">1</div>
                     <h3 class="text-xl font-bold text-gray-800">Jalur & Program Studi</h3>
                 </div>
+
 
                 <div class="space-y-6">
 
@@ -436,6 +500,11 @@
                 districts: [],
                 villages: [],
 
+                tokenInput: '',
+                tokenStatus: '',
+                tokenMessage: '',
+                isLoadingToken: false,
+
                 async init() {
 
                     if(this.selectedJalur) {
@@ -469,6 +538,40 @@
 
                 checkKategori(kategori) {
                     this.isPrestasi = (kategori === 'Prestasi');
+                },
+
+                async checkTokenStatus() {
+                    // Reset jika input terlalu pendek
+                    if (!this.tokenInput || this.tokenInput.length < 3) {
+                        this.tokenStatus = ''; 
+                        this.tokenMessage = '';
+                        return;
+                    }
+
+                    this.isLoadingToken = true;
+                    this.tokenMessage = 'Mengecek token...';
+                    this.tokenStatus = '';
+
+                    try {
+                        // Panggil API Laravel
+                        let response = await fetch(`/api/check-token?kode=${this.tokenInput}`);
+                        let data = await response.json();
+
+                        this.isLoadingToken = false;
+
+                        if (data.valid) {
+                            this.tokenStatus = 'valid';
+                            this.tokenMessage = '✅ ' + data.message;
+                        } else {
+                            this.tokenStatus = 'invalid';
+                            this.tokenMessage = '❌ ' + data.message;
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        this.isLoadingToken = false;
+                        this.tokenStatus = 'invalid';
+                        this.tokenMessage = 'Terjadi kesalahan koneksi.';
+                    }
                 },
 
 

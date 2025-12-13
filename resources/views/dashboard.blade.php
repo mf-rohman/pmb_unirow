@@ -145,6 +145,9 @@
                             @php 
                              
                                 $dokumenSaya = $pendaftar->dokumenPendaftars->firstWhere('jenis_dokumen', $dok);
+                                $statusDok = $pendaftar->dokumenPendaftars->pluck('status_verifikasi');
+
+                                $noteDok = $pendaftar->dokumenPendaftars->pluck('catatan_verifikasi');
 
                                 $isUploaded = !empty($dokumenSaya);
                                 
@@ -189,21 +192,32 @@
                                 <h4 class="font-bold text-gray-800 text-base mb-1 truncate" title="{{ $dok }}">{{ $dok }}</h4>
                                 <p class="text-xs text-gray-400 mb-4">
                                     @if($isUploaded)
-                                        {{ $dokumenSaya->nama_asli_file ?? 'File terupload' }}
+                                        @if($statusDok->contains('ditolak'))
+                                            <h6 class="text-xs text-red-600 font-semibold mb-1">{{ $noteDok}}</h6>
+                                        @else    
+                                            {{ $dokumenSaya->nama_asli_file ?? 'File terupload' }}
+                                        @endif
                                     @else
                                         Wajib (PDF/JPG Max 2MB)
                                     @endif
                                 </p>
                                 
                                 @if($isUploaded)
+                                    @if($statusDok->contains('ditolak'))
+                                        <button @click="openUploadModal('{{ $dok }}')" style="background: red;" class="w-full text-xs font-bold text-white py-2.5 rounded-xl hover:bg-gray-800 transition shadow-md transform hover:scale-105">
+                                            Upload Ulang ⚠
+                                        </button>
+
+                                    @else
                                     <div class="flex gap-2">
-                                        <a href="{{ Storage::url($dokumenSaya->path_file) }}" target="_blank" class="flex-1                    text-center text-xs font-bold text-indigo-600 bg-indigo-50 py-2.5 rounded-xl                   hover:bg-indigo-100 transition">
+                                        <a href="{{ Storage::url($dokumenSaya->path_file) }}" target="_blank" class="flex-1 text-center text-xs font-bold text-indigo-600 bg-indigo-50 py-2.5 rounded-xl hover:bg-indigo-100 transition">
                                             Lihat
                                         </a>
-                                        <button @click="openUploadModal('{{ $dok }}')" class="flex-1 text-xs font-bold                 text-gray-600 bg-gray-100 py-2.5 rounded-xl hover:bg-gray-200 transition">
+                                        <button @click="openUploadModal('{{ $dok }}')" class="flex-1 text-xs font-bold text-gray-600 bg-gray-100 py-2.5 rounded-xl hover:bg-gray-200 transition">
                                             Ganti
                                         </button>
                                     </div>
+                                    @endif
                                 @else
                                     <button @click="openUploadModal('{{ $dok }}')" class="w-full text-xs font-bold text-white                  bg-black py-2.5 rounded-xl hover:bg-gray-800 transition shadow-md transform                hover:scale-105">
                                         Upload Sekarang
@@ -217,7 +231,6 @@
 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-            
                     <button 
                         class="w-full flex justify-between items-center px-6 py-4 bg-white hover:bg-gray-50 transition"
                         onclick="toggleV3()">
@@ -259,7 +272,7 @@
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-gray-800">Program Beasiswa Prestasi</h4>
                                     <p class="text-sm text-gray-500 mt-1">
-                                        Tersedia program beasiswa prestasi untuk calon mahasiswa berprestasi akademik/                 non-akademik.
+                                        Tersedia program beasiswa prestasi untuk calon mahasiswa berprestasi akademik/non-akademik.
                                     </p>
                                 </div>
                             </div>

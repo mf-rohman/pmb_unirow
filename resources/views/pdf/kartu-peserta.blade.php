@@ -35,7 +35,7 @@
     <div class="header">
         <h1 class="title">Universitas PGRI Ronggolawe</h1>
         <p class="subtitle">Jl. Manunggal No.61, Tuban, Jawa Timur | Telp: (0356) 322233</p>
-        <h2 style="margin-top:10px;">KARTU TANDA PESERTA PMB 2025</h2>
+        <h2 style="margin-top:10px;">KARTU TANDA PESERTA PMB 2026</h2>
     </div>
 
     <div style="text-align: center;">

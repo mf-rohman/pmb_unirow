@@ -49,16 +49,21 @@
                     <span class="font-medium">{{ $hasRegistered ? 'Edit Formulir' : 'Isi Formulir' }}</span>
                 </a>
 
-                @if(in_array($pendaftar->status, ['verifikasi_data', 'lulus']))
+                @if($hasRegistered && $pendaftar->status == 'lulus')
                     <a href="{{ route('cetak.kartu') }}" target="_blank" class="w-full inline-flex justify-center items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-gray-500 hover:bg-indigo-700 transition">
                         <svg class="w-5 h-5 " fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                         Cetak Kartu Peserta
                     </a>
-                @else
+                @elseif($hasRegistered && $pendaftar->status == 'verifikasi_data')
                     <button disabled class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-gray-500 cursor-not-allowed">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         Menunggu Verifikasi
                     </button>
+                @else
+                    <a href="{{ $formRoute }}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl    transition-all duration-200 group {{ $isActive ? 'bg-[#5D5FEF] text-white shadow-lg    shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50 hover:text-[#5D5FEF]' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path    stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2    5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2    2 0 01-2 2z"/></svg>
+                        <span class="font-medium">Isi Formulir !</span>
+                    </a>
                 @endif
                 
                 <div class="pt-4"></div>
@@ -136,16 +141,21 @@
                                 </button>
                             </form>
 
-                            @if(in_array($pendaftar->status, ['verifikasi_data', 'lulus']))
-                                <a href="{{ route('cetak.kartu') }}" target="_blank" class="w-full inline-flex justify-center items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white hover:bg-indigo-700 transition">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            @if($hasRegistered && $pendaftar->status == 'lulus')
+                                <a href="{{ route('cetak.kartu') }}" target="_blank" class="w-full inline-flex          justify-center items-center px-4 py-2 bg-indigo-600 border border-transparent           rounded-md font-semibold text-gray-500 hover:bg-indigo-700 transition">
+                                    <svg class="w-5 h-5 " fill="none" stroke="currentColor" viewBox="0 0 24 24"><path           stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0           002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0         00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></         path></svg>
                                     Cetak Kartu Peserta
                                 </a>
-                            @else
-                                <button disabled class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-gray-500 cursor-not-allowed">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            @elseif($hasRegistered && $pendaftar->status == 'verifikasi_data')
+                                <button disabled class="w-full inline-flex justify-center items-center px-4 py-2            bg-gray-300 border border-transparent rounded-md font-semibold text-gray-500        cursor-not-allowed">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24             24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12            15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4          0 00-8 0v4h8z"></path></svg>
                                     Menunggu Verifikasi
                                 </button>
+                            @else
+                                <a href="{{ $formRoute }}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl                transition-all duration-200 group {{ $isActive ? 'bg-[#5D5FEF] text-white shadow-lg             shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50 hover:text-[#5D5FEF]' }}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path                stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6           4h6m2    5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.        293.707V19a2    2 0 01-2 2z"/></svg>
+                                    <span class="font-medium">Isi Formulir !</span>
+                                </a>
                             @endif
                         </div>
 

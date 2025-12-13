@@ -46,6 +46,6 @@ class RegisteredUserController extends Controller
 
         // Auth::login($user);
 
-        return redirect()->route('login')->with('success', 'Akun berhasil dibuat, silakan login!');
+        return redirect()->route('home')->with('success', 'Akun berhasil dibuat, silakan login!');
     }
 }
