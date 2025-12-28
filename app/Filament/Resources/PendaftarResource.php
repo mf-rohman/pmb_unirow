@@ -10,7 +10,9 @@ use App\Models\Province;
 use App\Models\Regency;
 use App\Models\District;
 use App\Models\JalurPendaftaran;
+use App\Models\User;
 use App\Models\Village;
+use Dom\Text;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -60,7 +62,9 @@ class PendaftarResource extends Resource
 
                             Select::make('jalur_pendaftaran_id')
                                 ->relationship('jalurPendaftaran', 'nama_jalur')
-                                ->disabled()
+                                // ->searchable()
+                                ->required()
+                                // ->disabled()
                                 ->label('Jalur'),
                         ]),
 
@@ -68,7 +72,9 @@ class PendaftarResource extends Resource
                             Select::make('program_studi_id_1')
                                 ->relationship('programStudi1', 'nama_prodi')
                                 ->label('Pilihan 1')
-                                ->disabled(),
+                                ->searchable()
+                                ->preload()
+                                ->required(),
 
                             Select::make('program_studi_id_2')
                                 ->relationship('programStudi2', 'nama_prodi')
@@ -81,6 +87,20 @@ class PendaftarResource extends Resource
                 Section::make('Biodata Calon Mahasiswa')
                     ->schema([
                         TextInput::make('nama_lengkap')->required(),
+                        TextInput::make('email')
+                            ->label('Email (Untuk Login)')
+                            ->email()
+                            ->required()
+                            ->unique(User::class, 'email', ignoreRecord:true)
+                            ->visibleOn('create'),
+
+                        TextInput::make('email_readonly')
+                            ->label('Email User')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->visibleOn('edit')
+                            ->formatStateUsing(fn ($record) => $record->user->email ?? '-'),
+                        
                         TextInput::make('nik')->label('NIK')->required(),
                         TextInput::make('nisn')->label('NISN')->required(),
                         TextInput::make('no_hp')->label('No HP/WA')->required(),
@@ -185,11 +205,25 @@ class PendaftarResource extends Resource
                     ->searchable()
                     ->weight('bold')
                     ->sortable(),
+
+                TextColumn::make('nik')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('nisn')
+                    ->searchable()
+                    ->sortable(),
                 
                 TextColumn::make('nama_lengkap')
                     ->searchable()
                     // ->weight('bold')
                     ->sortable(),
+
+                TextColumn::make('gelombang.nama_gelombang')
+                    ->label('Gelombang')
+                    ->sortable()
+                    ->badge(),
+
 
                 TextColumn::make('jalurPendaftaran.nama_jalur')
                     ->label('Jalur')
@@ -198,11 +232,6 @@ class PendaftarResource extends Resource
                 
                 TextColumn::make('programStudi1.singkatan')
                     ->label('Prodi 1')
-                    ->badge()
-                    ->color('info'),
-
-                TextColumn::make('programStudi2.singkatan')
-                    ->label('Prodi 2')
                     ->badge()
                     ->color('info'),
 

@@ -13,6 +13,9 @@
     
     {{-- Alpine JS CDN --}}
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+
 </head>
 
 <body class="font-sans antialiased bg-gray-50 text-gray-900" x-data="{ mobileMenuOpen: false }">
@@ -44,10 +47,19 @@
                     $isActive = request()->routeIs('formulir.*');
                 @endphp
 
-                <a href="{{ $formRoute }}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group {{ $isActive ? 'bg-[#5D5FEF] text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50 hover:text-[#5D5FEF]' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span class="font-medium">{{ $hasRegistered ? 'Edit Formulir' : 'Isi Formulir' }}</span>
-                </a>
+                @if(empty($gelombangAktif))
+                <a href="#" onclick="popupGelombang()"  class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group {{ $isActive ? 'bg-[#5D5FEF] text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50 hover:text-[#5D5FEF]' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="font-medium">{{ $hasRegistered ? 'Edit Formulir' : 'Isi Formulir' }}</span>
+                    </a>
+                @else
+                    <a href="{{ $formRoute }}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group {{ $isActive ? 'bg-[#5D5FEF] text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50 hover:text-[#5D5FEF]' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="font-medium">{{ $hasRegistered ? 'Edit Formulir' : 'Isi Formulir' }}</span>
+                    </a>
+                @endif    
+
+
 
                 @if($hasRegistered && $pendaftar->status == 'lulus')
                     <a href="{{ route('cetak.kartu') }}" target="_blank" class="w-full inline-flex justify-center items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-gray-500 hover:bg-indigo-700 transition">
@@ -151,11 +163,11 @@
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24             24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12            15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4          0 00-8 0v4h8z"></path></svg>
                                     Menunggu Verifikasi
                                 </button>
-                            @else
-                                <a href="{{ $formRoute }}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl                transition-all duration-200 group {{ $isActive ? 'bg-[#5D5FEF] text-white shadow-lg             shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50 hover:text-[#5D5FEF]' }}">
+                           
+                                <!-- <a href="{{ $formRoute }}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl                transition-all duration-200 group {{ $isActive ? 'bg-[#5D5FEF] text-white shadow-lg             shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50 hover:text-[#5D5FEF]' }}">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path                stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6           4h6m2    5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.        293.707V19a2    2 0 01-2 2z"/></svg>
                                     <span class="font-medium">Isi Formulir !</span>
-                                </a>
+                                </a> -->
                             @endif
                         </div>
 
@@ -180,5 +192,27 @@
             
         </main>
     </div>
+
+    <script>
+        function popupGelombang () {
+            Swal.fire({
+              title: "Tidak ada gelombang aktif. Tunggu gelombang berikutnya untuk isi formulir. Hubungi Admin untuk edit formulir.",
+              showClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeInUp
+                  animate__faster
+                `
+              },
+              hideClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeOutDown
+                  animate__faster
+                `
+              }
+            });
+        }
+    </script>
 </body>
 </html>

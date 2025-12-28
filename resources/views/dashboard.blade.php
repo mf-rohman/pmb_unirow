@@ -58,18 +58,23 @@
 
 
         <div class="flex justify-between items-center mb-8">
-            <div class="relative w-full max-w-screen-md hidden md:block">
-                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <div class="relative w-full max-w-screen-md hidden md:block" data-tooltip-target="tooltip-dark" data-tooltip-trigger="hover">
+                <span  class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </span>
-                <input type="text" class="block w-full pl-11 pr-4 py-3 border-none rounded-2xl bg-white text-gray-900 placeholder-gray-400 focus:ring-0 shadow-sm cursor-default" placeholder="Cari informasi...">
+                <input  type="text" class="block w-full pl-11 pr-4 py-3 border-none rounded-2xl bg-white text-gray-900 placeholder-gray-400 focus:ring-0 shadow-sm cursor-text" placeholder="Cari informasi...">
             </div>
-            <div class="flex items-center gap-4">
+            
+            <div id="tooltip-dark" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-2xl shadow-xs opacity-0 tooltip">
+                Fitur dalam pengembangan
+                
+            </div>
+            <!-- <div class="flex items-center gap-4">
                 <button class="p-3 bg-white rounded-full text-gray-500 hover:text-[#5D5FEF] shadow-sm transition relative">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                     <span class="absolute top-2 right-2.5 h-2 w-2 bg-red-500 rounded-full border border-white"></span>
                 </button>
-            </div>
+            </div> -->
         </div>
 
 
@@ -338,13 +343,18 @@
                     </div>
                 </div>
 
-
                 <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-50">
                     <h3 class="text-lg font-bold text-gray-800 mb-6">Bantuan Panitia</h3>
                     <div class="space-y-6">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">A</div><div><h4 class="font-bold text-sm text-gray-800">Akademik</h4><p class="text-xs text-gray-400">Info Prodi</p></div></div>
-                            <button class="text-xs font-bold text-[#5D5FEF] border border-[#5D5FEF] px-4 py-1.5 rounded-full hover:bg-[#5D5FEF] hover:text-white transition">Chat</button>
+                            <button data-tooltip-target="tooltip-dark" data-tooltip-trigger="hover" class="text-xs font-bold text-[#5D5FEF] border border-[#5D5FEF] px-4 py-1.5 rounded-full hover:bg-[#5D5FEF] hover:text-white transition">Chat</button>
+                            
+                            <div id="tooltip-dark" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-2xl shadow-xs opacity-0 tooltip">
+                                Fitur dalam pengembangan
+                
+                            </div>
+
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">K</div><div><h4 class="font-bold text-sm text-gray-800">Keuangan</h4><p class="text-xs text-gray-400">Pembayaran</p></div></div>

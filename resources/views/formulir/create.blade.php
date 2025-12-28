@@ -182,7 +182,7 @@
                     {{-- B. PILIHAN PRODI (Tetap sama) --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Pilihan 1 (Wajib)</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Pilih Program Studi</label>
                             <select name="program_studi_id_1" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4             focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]" required>
                                 <option value="">-- Pilih Program Studi --</option>
                                 @foreach($fakultas as $f)
@@ -197,7 +197,7 @@
                             </select>
                             <x-input-error :messages="$errors->get('program_studi_id_1')" class="mt-1" />
                         </div>
-                        <div>
+                        <!-- <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">Pilihan 2 (Opsional)</label>
                             <select name="program_studi_id_2" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4             focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]">
                                 <option value="">-- Boleh Kosong --</option>
@@ -211,7 +211,7 @@
                                     </optgroup>
                                 @endforeach
                             </select>
-                        </div>
+                        </div> -->
                     </div>
 
                     {{-- C. KONDISIONAL INPUT (SESUAI DATABASE & KATEGORI) --}}

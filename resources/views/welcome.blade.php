@@ -6,18 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login PMB - Universitas</title>
     
-    <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
-    <!-- Font Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* === TEMA MABA (UNGU/INDIGO) === */
         :root {
-            --primary: #5D5FEF;       /* Warna Utama Dashboard */
+            --primary: #5D5FEF;      
             --primary-dark: #4b4ddb;
-            --bg-color: #F5F6FA;      /* Background Dashboard */
+            --bg-color: #F5F6FA;     
             --text-color: #333;
             --light-text: #fff;
         }
@@ -265,8 +262,8 @@
             width: 100%; 
             max-width: 350px; 
             margin-top: 20px;
-            border-radius: 20px; /* Biar ujungnya tidak tajam karena backgroundnya putih */
-            mix-blend-mode: screen; /* Hack agar background putih menyatu dengan gradient */
+            border-radius: 20px; 
+            mix-blend-mode: screen; 
             margin-bottom: 10px;
         }
 
@@ -288,7 +285,7 @@
         .logo {
             max-width: 100%;
             max-height: 100%;
-            object-fit: contain;       /* supaya gambar tidak gepeng */
+            object-fit: contain; 
         }
 
         .container.active .toggle-panel.toggle-left{
@@ -418,7 +415,6 @@
     
     <div class="container {{ request()->routeIs('register') || $errors->has('name') ? 'active' : '' }}" id="main-container">
         
-        <!-- === FORM LOGIN === -->
         <div class="form-box login">
             <form method="POST" action="{{ route('login') }}">
                 @csrf
@@ -439,14 +435,13 @@
 
                 <div class="forgot-link"><a href="{{ route('password.request') }}">Lupa Password?</a></div>
                 <button type="submit" class="btn">Login</button>
-                <p>atau login dengan</p>
+                <!-- <p>atau login dengan</p>
                 <div class="social-icons">
                     <a href="{{ route('google.login') }}"><i class='bx bxl-google'></i></a>
-                </div>
+                </div> -->
             </form>
         </div>
 
-        <!-- === FORM REGISTER === -->
         <div class="form-box register">
             <form method="POST" action="{{ route('register') }}">
                 @csrf
@@ -475,10 +470,10 @@
                 </div>
                 
                 <button type="submit" class="btn">Daftar Sekarang</button>
-                <p>atau daftar dengan</p>
+                <!-- <p>atau daftar dengan</p>
                 <div class="social-icons">
                     <a href="{{ route('google.login') }}"><i class='bx bxl-google'></i></a>
-                </div>
+                </div> -->
             </form>
         </div>
 
