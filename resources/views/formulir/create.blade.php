@@ -188,7 +188,7 @@
                                 @foreach($fakultas as $f)
                                     <optgroup label="{{ $f->nama_fakultas }}">
                                         @foreach($f->programStudis as $prodi)
-                                            <option value="{{ $prodi->kode_prodi }}" {{ old('program_studi_id_1') ==            $prodi->kode_prodi ? 'selected' : '' }}>
+                                            <option value="{{ $prodi->kode_prodi }}" {{ old('program_studi_id_1', $pendaftar->program_studi_id_1 ?? '') == $prodi->kode_prodi ? 'selected' : '' }}>
                                                 {{ $prodi->jenjang }} {{ $prodi->nama_prodi }}
                                             </option>
                                         @endforeach
@@ -331,56 +331,86 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- ✅ PERBAIKAN: Tambahkan $pendaftar->nama_lengkap -->
                     <div class="col-span-2 md:col-span-1">
                         <label class="block text-sm font-bold text-gray-700 mb-2">Nama Lengkap</label>
-                        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', Auth::user()->name) }}" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF] transition-all" required>
+                        <input type="text" name="nama_lengkap" 
+                               value="{{ old('nama_lengkap', $pendaftar->nama_lengkap ?? Auth::user()->name) }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF]          focus:border-[#5D5FEF] transition-all" required>
+                        <x-input-error :messages="$errors->get('nama_lengkap')" class="mt-1" />
                     </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">NIK</label>
-                        <input type="number" name="nik" value="{{ old('nik', $pendaftar->nik ?? '') }}" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF] transition-all" required>
+                        <input type="number" name="nik" 
+                               value="{{ old('nik', $pendaftar->nik ?? '') }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF]          focus:border-[#5D5FEF] transition-all" required>
+                        <x-input-error :messages="$errors->get('nik')" class="mt-1" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">NISN</label>
-                        <input type="number" name="nisn" value="{{old('nisn', $pendaftar->nisn ?? '')}}" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF] transition-all" required>
+                        <input type="number" name="nisn" 
+                               value="{{ old('nisn', $pendaftar->nisn ?? '') }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF]          focus:border-[#5D5FEF] transition-all" required>
+                        <x-input-error :messages="$errors->get('nisn')" class="mt-1" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Tempat Lahir</label>
-                        <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir', $pendaftar->tempat_lahir ?? '') }}" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF] transition-all" required>
+                        <input type="text" name="tempat_lahir" 
+                               value="{{ old('tempat_lahir', $pendaftar->tempat_lahir ?? '') }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF]          focus:border-[#5D5FEF] transition-all" required>
+                        <x-input-error :messages="$errors->get('tempat_lahir')" class="mt-1" />
                     </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Tanggal Lahir</label>
-                        <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', $pendaftar->tanggal_lahir ?? '') }}" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF] transition-all" required>
+                        <input type="date" name="tanggal_lahir" 
+                               value="{{ old('tanggal_lahir', $pendaftar->tanggal_lahir ?? '') }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF]          focus:border-[#5D5FEF] transition-all" required>
+                        <x-input-error :messages="$errors->get('tanggal_lahir')" class="mt-1" />
                     </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Jenis Kelamin</label>
-                        <select name="jenis_kelamin" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]">
-                            <option value="L">Laki-laki</option>
-                            <option value="P">Perempuan</option>
+                        <select name="jenis_kelamin" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2             focus:ring-[#5D5FEF] focus:border-[#5D5FEF]" required>
+                            <option value="L" {{ old('jenis_kelamin', $pendaftar->jenis_kelamin ?? '') == 'L' ? 'selected' : '' }}          >Laki-laki</option>
+                            <option value="P" {{ old('jenis_kelamin', $pendaftar->jenis_kelamin ?? '') == 'P' ? 'selected' : '' }}          >Perempuan</option>
                         </select>
+                        <x-input-error :messages="$errors->get('jenis_kelamin')" class="mt-1" />
                     </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Agama</label>
-                        <select name="agama" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]">
-                            <option value="Islam">Islam</option>
-                            <option value="Kristen">Kristen</option>
-                            <option value="Katolik">Katolik</option>
-                            <option value="Hindu">Hindu</option>
-                            <option value="Budha">Budha</option>
+                        <select name="agama" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-         [#5D5FEF] focus:border-[#5D5FEF]" required>
+                            <option value="Islam" {{ old('agama', $pendaftar->agama ?? '') == 'Islam' ? 'selected' : '' }}>Islam</          option>
+                            <option value="Kristen" {{ old('agama', $pendaftar->agama ?? '') == 'Kristen' ? 'selected' : '' }}          >Kristen</option>
+                            <option value="Katolik" {{ old('agama', $pendaftar->agama ?? '') == 'Katolik' ? 'selected' : '' }}          >Katolik</option>
+                            <option value="Hindu" {{ old('agama', $pendaftar->agama ?? '') == 'Hindu' ? 'selected' : '' }}>Hindu</          option>
+                            <option value="Budha" {{ old('agama', $pendaftar->agama ?? '') == 'Budha' ? 'selected' : '' }}>Budha</          option>
+                            <option value="Konguchu" {{ old('agama', $pendaftar->agama ?? '') == 'Konguchu' ? 'selected' : '' }}            >Konguchu</option>
                         </select>
+                        <x-input-error :messages="$errors->get('agama')" class="mt-1" />
                     </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">No. HP (WhatsApp)</label>
-                        <input type="number" name="no_hp" value="{{ old('no_hp', $pendaftar->no_hp ?? '') }}" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]" required>
+                        <input type="number" name="no_hp" 
+                               value="{{ old('no_hp', $pendaftar->no_hp ?? '') }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF]          focus:border-[#5D5FEF]" required>
+                        <x-input-error :messages="$errors->get('no_hp')" class="mt-1" />
                     </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Email (Terdaftar)</label>
-                        <input type="email" value="{{ Auth::user()->email }}" class="w-full rounded-xl border-gray-200 bg-gray-200 py-3 px-4 text-gray-500 cursor-not-allowed" readonly>
+                        <input type="email" value="{{ Auth::user()->email }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-200 py-3 px-4 text-gray-500 cursor-not-allowed"             readonly>
                     </div>
                 </div>
             </div>
 
+            <!-- SECTION 3: Sekolah & Orang Tua -->
             <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-50">
                 <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
                     <div class="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-500 font-bold">3</div>
@@ -389,19 +419,36 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Asal Sekolah</label>
-                        <input type="text" name="asal_sekolah" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]" placeholder="SMA/SMK..." required>
+                        <input type="text" name="asal_sekolah" 
+                               value="{{ old('asal_sekolah', $pendaftar->asal_sekolah ?? '') }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF]          focus:border-[#5D5FEF]" 
+                               placeholder="SMA/SMK..." required>
+                        <x-input-error :messages="$errors->get('asal_sekolah')" class="mt-1" />
                     </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Jurusan Sekolah</label>
-                        <input type="text" name="jurusan_asal_sekolah" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]" placeholder="IPA/IPS/TKJ...">
+                        <input type="text" name="jurusan_asal_sekolah" 
+                               value="{{ old('jurusan_asal_sekolah', $pendaftar->jurusan_asal_sekolah ?? '') }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF]          focus:border-[#5D5FEF]" 
+                               placeholder="IPA/IPS/TKJ...">
+                        <x-input-error :messages="$errors->get('jurusan_asal_sekolah')" class="mt-1" />
                     </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Nama Ibu Kandung</label>
-                        <input type="text" name="nama_ibu_kandung" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]" required>
+                        <input type="text" name="nama_ibu_kandung" 
+                               value="{{ old('nama_ibu_kandung', $pendaftar->nama_ibu_kandung ?? '') }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF]          focus:border-[#5D5FEF]" required>
+                        <x-input-error :messages="$errors->get('nama_ibu_kandung')" class="mt-1" />
                     </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Nama Ayah Kandung</label>
-                        <input type="text" name="nama_ayah_kandung" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]">
+                        <input type="text" name="nama_ayah_kandung" 
+                               value="{{ old('nama_ayah_kandung', $pendaftar->nama_ayah_kandung ?? '') }}" 
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]">
+                        <x-input-error :messages="$errors->get('nama_ayah_kandung')" class="mt-1" />
                     </div>
                 </div>
             </div>
@@ -415,7 +462,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="col-span-2">
                         <label class="block text-sm font-bold text-gray-700 mb-2">Alamat Lengkap</label>
-                        <textarea name="alamat_lengkap" rows="2" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]" placeholder="Nama Jalan, No. Rumah, Gang..." required></textarea>
+                        <textarea name="alamat_lengkap" rows="2" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]" placeholder="Nama Jalan, No. Rumah, Gang..." required>{{ old('alamat_lengkap', $pendaftar->alamat_lengkap ?? '') }}</textarea>
                     </div>
                     <div class="flex gap-4">
                         <div class="w-1/2">
@@ -433,7 +480,7 @@
                         <select name="province_id" x-model="selectedProvince" @change="fetchRegencies()" class="w-full rounded-xl border-gray-200 bg-gray-50 py-3 px-4 focus:ring-2 focus:ring-[#5D5FEF] focus:border-[#5D5FEF]">
                             <option value="">-- Pilih Provinsi --</option>
                             @foreach($provinces as $prov)
-                                <option value="{{ $prov->id }}">{{ $prov->name }}</option>
+                                <option value="{{ $prov->id }}" {{ old('province_id', $pendaftar->province_id ?? '') == $prov->id ? 'selected' : '' }}>{{ $prov->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -475,7 +522,7 @@
                     Batal
                 </button>
                 <button type="submit" class="px-8 py-4 rounded-xl bg-gray-900 text-white font-bold hover:bg-black transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                    Simpan Pendaftaran
+                {{ $isEdit ? 'Simpan Perubahan' : 'Lanjut ke Upload Berkas →' }}
                 </button>
             </div>
 

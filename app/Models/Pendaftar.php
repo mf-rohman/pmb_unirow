@@ -9,6 +9,22 @@ class Pendaftar extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id', 'gelombang_id', 'email', 'no_pendaftaran', 'status',
+        'jalur_pendaftaran_id', 
+        'program_studi_id_1', 
+        'program_studi_id_2',
+        'nama_lengkap', 'nik', 'nisn', 
+        'tempat_lahir', 'tanggal_lahir', 
+        'jenis_kelamin', 'agama', 'no_hp',
+        'asal_sekolah', 'jurusan_asal_sekolah',
+        'nama_ibu_kandung', 'nama_ayah_kandung',
+        'alamat_lengkap', 'rt', 'rw',
+        'province_id', 'regency_id', 'district_id', 'village_id',
+        'nilai_rapor_x_1', 'nilai_rapor_x_2', 
+        'nilai_rapor_xi_1', 'nilai_rapor_xi_2',
+    ];
+
     protected $guarded = [];
 
     public function user () {

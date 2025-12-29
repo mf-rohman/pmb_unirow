@@ -41,6 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/formulir-pendaftaran/edit', [FormulirController::class, 'edit'])->name('formulir.edit');
     Route::put('/formulir-pendaftaran/update', [FormulirController::class, 'update'])->name('formulir.update');
 
+    Route::get('/formulir-pendaftaran/upload/{id}', [FormulirController::class, 'showUploadPage'])->name('formulir.upload');
+    Route::post('/formulir-pendaftaran/upload/{id}', [FormulirController::class, 'storeUpload'])->name('formulir.store_upload');
+    Route::post('/formulir-pendaftaran/finish/{id}', [FormulirController::class, 'finalize'])->name('formulir.finish');
+
     Route::post('/upload-dokumen', [FormulirController::class, 'uploadDokumen'])->name('dokumen.upload');
 
     Route::get('/cetak-kartu', [FormulirController::class, 'cetakKartu'])->name('cetak.kartu');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DokumenPendaftar;
 use App\Models\Fakultas;
 use App\Models\Gelombang;
 use App\Models\JalurPendaftaran;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule; 
 
 class FormulirController extends Controller
 {
@@ -105,9 +108,9 @@ class FormulirController extends Controller
 
         $gelombangAktif = Gelombang::where('is_active', true)->firstOrFail();
 
-        DB::transaction(function() use ($validate, $gelombangAktif, $tokenData){
+        $pendaftar = DB::transaction(function() use ($validate, $gelombangAktif, $tokenData){
             $user = Auth::user();
-            $prodi = ProgramStudi::with('fakultas')->find($validate['program_studi_id_1']);
+            $prodi = ProgramStudi::where('kode_prodi', $validate['program_studi_id_1'])->firstOrFail();
             $kodeFakultas = $prodi->fakultas->kode_fakultas;
             $kodeProdi = $prodi->kode_prodi;
             $tahun = now()->format('Y');
@@ -117,9 +120,9 @@ class FormulirController extends Controller
             $pendaftar = Pendaftar::create([
                 'user_id' => Auth::id(),
                 'gelombang_id' => $gelombangAktif->id,
-                'email' => Auth::user()->email,
-                'no_pendaftaran'=> 'MABA-' . Auth::user()->id . $tahun . '-' . $kodeFakultas . $kodeProdi,
-                'status' => 'baru',
+                'email' => $user->email,
+                'no_pendaftaran'=> 'MABA-' . $user->id . $tahun . '-' . $kodeFakultas . $kodeProdi,
+                'status' => 'draft',
 
                 ...$dataBersih
             ]);
@@ -131,66 +134,147 @@ class FormulirController extends Controller
                     'pendaftar_id' => $pendaftar->id, 
                 ]);
             }
+            return $pendaftar;
         });
 
-        return redirect()->route('dashboard')->with('success', 'Pendaftaran berhasil! Silakan upload dokumen pendukung.');
+        return redirect()->route('formulir.upload', $pendaftar->id)
+            ->with('success', 'Biodata tersimpan. Silakan upload berkas.');
     }
 
-    public function edit () {
+    public function showUploadPage($id)
+    {
+        $pendaftar = Pendaftar::findOrFail($id);
+        
+        // Keamanan: Pastikan yang akses adalah pemilik data
+        if ($pendaftar->user_id !== Auth::id()) abort(403);
+
+        // Jika status sudah bukan draft (sudah selesai), lempar ke dashboard
+        if ($pendaftar->status != 'draft') return redirect()->route('dashboard');
+
+        return view('formulir.upload', compact('pendaftar'));
+    }
+
+    public function storeUpload(Request $request, $id)
+    {
+        $request->validate([
+            'jenis_dokumen' => 'required|string',
+            'file'          => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        $pendaftar = Pendaftar::findOrFail($id);
+        if ($pendaftar->user_id !== Auth::id()) abort(403);
+
+        $path = $request->file('file')->store('dokumen-pendaftar', 'public');
+
+        DokumenPendaftar::updateOrCreate(
+            ['pendaftar_id' => $pendaftar->id, 'jenis_dokumen' => $request->jenis_dokumen],
+            [
+                'path_file' => $path,
+                'nama_asli_file' => $request->file('file')->getClientOriginalName(),
+                'status_verifikasi' => 'menunggu'
+            ]
+        );
+
+        return response()->json(['success' => true]);
+    }
+
+    public function finalize($id)
+    {
+        $pendaftar = Pendaftar::findOrFail($id);
+        
+        // 1. Keamanan: Pastikan yang akses adalah pemilik data
+        if ($pendaftar->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses ke data ini.');
+        }
+
+        // 2. Tentukan Dokumen Wajib (Sama seperti logika di View)
+        // Dokumen dasar
+        $wajib = ['Ijazah', 'Foto Terbaru', 'Transkrip Nilai', 'KTP', 'KK', 'Bukti Transfer'];
+
+        // Cek Dokumen Tambahan berdasarkan Jalur
+        $jalur = $pendaftar->jalurPendaftaran;
+        if ($jalur) {
+            $namaJalur = strtolower($jalur->nama_jalur);
+            $kategori = $jalur->kategori;
+
+            if ($kategori == 'Hafidz' || str_contains($namaJalur, 'hafidz')) {
+                $wajib[] = 'Sertifikat Hafalan';
+            }
+            if ($kategori == 'Prestasi' || str_contains($namaJalur, 'prestasi')) {
+                $wajib[] = 'Sertifikat Prestasi';
+            }
+            if (str_contains($namaJalur, 'utbk')) {
+                $wajib[] = 'Sertifikat Nilai UTBK';
+            }
+        }
+
+        // 3. Cek apa saja yang sudah diupload
+        $uploaded = $pendaftar->dokumenPendaftars()->pluck('jenis_dokumen')->toArray();
+
+        // 4. Bandingkan: Apakah ada dokumen wajib yang BELUM ada di uploaded?
+        // array_diff = mencari item di $wajib yang tidak ada di $uploaded
+        $kurang = array_diff($wajib, $uploaded);
+
+        if (!empty($kurang)) {
+            // Jika ada yang kurang, kembalikan dengan error
+            return back()->with('error', 'Mohon lengkapi semua dokumen wajib sebelum menyelesaikan pendaftaran.');
+        }
+
+        // 5. Jika Lengkap, Ubah status jadi 'baru'
+        $pendaftar->update([
+            'status' => 'baru'
+        ]);
+
+        // 6. Kembali ke Dashboard
+        return redirect()->route('dashboard')->with('success', 'Selamat! Pendaftaran Anda telah selesai dikirim. Tunggu verifikasi admin.');
+    }
+
+    public function edit()
+    {
         $user = Auth::user();
         $pendaftar = $user->pendaftar;
 
-        if (!$pendaftar) {
-            return redirect()->route('formulir.create');
-        }
+        if (!$pendaftar) return redirect()->route('formulir.create');
 
         $gelombangAktif = Gelombang::where('is_active', true)->first();
         $jalurPendaftaran = JalurPendaftaran::where('is_active', true)->get();
         $fakultas = Fakultas::with('programStudis')->get();
         $provinces = Province::all();
 
-        return view(
-            'formulir.create', compact(
-                'gelombangAktif',
-                'jalurPendaftaran',
-                'fakultas',
-                'provinces',
-                'pendaftar',
-            )
-        );
+        return view('formulir.create', compact('gelombangAktif', 'jalurPendaftaran', 'fakultas', 'provinces', 'pendaftar'));
     }
 
-    public function update (Request $request) {
+    public function update(Request $request)
+    {
         $user = Auth::user();
         $pendaftar = $user->pendaftar;
 
-        if ($pendaftar->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
+        if (!$pendaftar || $pendaftar->user_id !== Auth::id()) abort(403, 'Unauthorized');
 
-        if (!Gelombang::where('is_active', true)->exists()) {
-            return redirect()->route('dashboard')->with('error', 'Pendaftaran sudah ditutup.');
-        }
-        
+        // Validasi - LENGKAPI SEMUA FIELD
         $validate = $request->validate([
             'jalur_pendaftaran_id' => 'required|exists:jalur_pendaftarans,id',
             'program_studi_id_1' => 'required|exists:program_studis,kode_prodi',
             'program_studi_id_2' => 'nullable|exists:program_studis,kode_prodi|different:program_studi_id_1',
-            
             'nama_lengkap' => 'required|string|max:255',
-            'nik' => 'required|numeric|digits:16|unique:pendaftars,nik,' .$pendaftar->id, 
+
+            'nik' => [
+                'required', 
+                'numeric', 
+                'digits:16', 
+                Rule::unique('pendaftars', 'nik')->ignore($pendaftar->id, 'id') // Eksplisit sebutkan kolom ID
+            ],
+
             'nisn' => 'required|numeric',
             'tempat_lahir' => 'required|string',
             'tanggal_lahir' => 'required|date',
             'jenis_kelamin' => 'required|in:L,P',
             'agama' => 'required|string',
             'no_hp' => 'required|numeric',
-            
             'asal_sekolah' => 'required|string',
             'jurusan_asal_sekolah' => 'nullable|string',
             'nama_ibu_kandung' => 'required|string',
             'nama_ayah_kandung' => 'nullable|string',
-            
             'alamat_lengkap' => 'required|string',
             'rt' => 'nullable|string|max:3',
             'rw' => 'nullable|string|max:3',
@@ -199,21 +283,43 @@ class FormulirController extends Controller
             'district_id' => 'required|exists:districts,id',
             'village_id' => 'required|exists:villages,id',
 
+            // TAMBAHKAN YANG HILANG
             'nilai_rapor_x_1' => 'nullable|numeric|between:0,100',
             'nilai_rapor_x_2' => 'nullable|numeric|between:0,100',
             'nilai_rapor_xi_1' => 'nullable|numeric|between:0,100',
             'nilai_rapor_xi_2' => 'nullable|numeric|between:0,100',
+
+            'token_bk' => 'nullable|string',
         ]);
 
         try {
+            // Buang token_bk dari data yang akan di-update
+            $dataToUpdate = Arr::except($validate, ['token_bk']);
 
-            $pendaftar->update($validate);
-            $pendaftar->refresh();
-    
-            return redirect()->route('dashboard')->with('success', 'Data pendaftaran berhasil diupdate!');
+            // DEBUG: Tambahkan ini untuk melihat data yang akan di-update
+            Log::info('Data yang akan di-update:', $dataToUpdate);
+
+            $updated = $pendaftar->update($dataToUpdate);
+
+            // DEBUG: Cek apakah update berhasil
+            Log::info('Status update:', ['success' => $updated]);
+
+            if ($pendaftar->status == 'draft') {
+                return redirect()->route('formulir.upload', $pendaftar->id)
+                    ->with('success', 'Perubahan disimpan. Silakan lanjutkan upload berkas.');
+            }
+
+            return redirect()->route('dashboard')
+                ->with('success', 'Data pendaftaran berhasil diperbarui!');
 
         } catch (\Exception $e) {
-            return back()->withInput()->withErrors(['msg' => 'Gagal Menyimpan: ', $e->getMessage()]);
+            Log::error('Error saat update pendaftar:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()
+                ->withErrors(['msg' => 'Gagal Menyimpan: ' . $e->getMessage()]);
         }
     }
 
