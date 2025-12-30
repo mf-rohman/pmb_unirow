@@ -170,7 +170,7 @@ class FormulirController extends Controller
             ['pendaftar_id' => $pendaftar->id, 'jenis_dokumen' => $request->jenis_dokumen],
             [
                 'path_file' => $path,
-                'nama_asli_file' => $request->file('file')->getClientOriginalName(),
+                'nama_file' => $request->file('file')->getClientOriginalName(),
                 'status_verifikasi' => 'menunggu'
             ]
         );
