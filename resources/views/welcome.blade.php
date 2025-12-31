@@ -157,7 +157,6 @@
             color: #fff;
             font-size: 16px;
             font-weight: 600;
-            /* transition: .3s; */
         }
 
         .btn:hover { background: var(--primary-dark)}
@@ -209,7 +208,6 @@
             left: -250%;
             width: 300%;
             background: linear-gradient(to right, #5D5FEF, #A5A6F6);
-            /* border: 2px solid red; */
             height: 100%;
             border-radius: 150px;
             z-index: 2; 
@@ -224,7 +222,6 @@
             position: absolute;
             width: 50%;
             height: 100%;
-            /* background: seagreen; */
             color: #fff;
             display: flex;
             flex-direction: column;
@@ -316,6 +313,7 @@
             box-shadow: none;
         }
 
+        /* MOBILE RESPONSIVE */
         @media screen and (max-width: 650px) {
             .container {
                 height: calc(100vh - 40px);
@@ -323,97 +321,210 @@
         
             .form-box {
                 width: 100%;
-                height: 70%;
+                height: 65%;
                 bottom: 0;
-            
+                padding: 30px 25px;
             }
         
             .container.active .form-box {
                 right: 0;
-                bottom: 30%;
+                bottom: 35%;
             }
         
             .toggle-box::before {
                 left: 0;
-                top: -270%;
+                top: -285%;
                 width: 100%;
-                height: 300%;
+                height: 320%;
                 border-radius: 20vw;
             }
         
             .container.active .toggle-box::before {
                 left: 0;
-                top: 70%;
+                top: 65%;
             }
         
             .toggle-panel {
-                /* border: 2px solid red; */
                 width: 100%;
-                height: 30%;
+                height: 35%;
+                padding: 20px;
+                justify-content: flex-start;
+                padding-top: 25px;
             }
         
             .toggle-panel.toggle-left {
                 top: 0;
-            
             }
         
             .container.active .toggle-panel.toggle-left {
                 left: 0;
-                top: -30%;
+                top: -35%;
             }
         
             .toggle-panel.toggle-right {
                 right: 0;
-                bottom: -30%;
+                bottom: -35%;
             }
         
             .container.active .toggle-panel.toggle-right {
                 bottom: 0;
-            
             }
 
             .logoFrame {
-                width: 100px;
-                padding: 12px;
-                border-radius: 20px;
-                background: #e3e6eb;
-                box-shadow: 
-                    6px 6px 15px rgba(0,0,0,0.15),
-                    -6px -6px 15px rgba(255,255,255,0.8);
-
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                margin-bottom: 10px;
+                width: 80px;
+                padding: 8px;
+                margin-bottom: 8px;
             }
 
-            .logo {
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain;
+            .toggle-panel h1 {
+                font-size: 1.5em;
+                margin-bottom: 5px;
+            }
+
+            .toggle-panel p {
+                font-size: 13px;
+                margin-bottom: 12px;
+            }
+
+            .toggle-panel .btn {
+                width: 140px;
+                height: 42px;
+                font-size: 15px;
             }
 
             .illustration {
                 display: none;
             }
 
+            /* Optimasi form for mobile */
+            h1 {
+                font-size: 26px;
+                margin-bottom: 20px;
+            }
+
+            .input-box {
+                height: 45px;
+                margin: 15px 0;
+            }
+
+            .input-box input {
+                font-size: 15px;
+                padding: 0 40px 0 12px;
+            }
+
+            .input-box i {
+                font-size: 18px;
+                right: 12px;
+            }
+
+            .forgot-link {
+                margin: -8px 0 15px;
+            }
+
+            .btn {
+                height: 44px;
+                font-size: 15px;
+            }
+        }
+
+        /* EXTRA SMALL MOBILE */
+        @media screen and (max-width: 400px) {
+            .form-box {
+                padding: 25px 20px;
+            }
         
-            @media screen and (max-width: 400px) {
-                .form-box {
-                    padding: 20px;
-                }
-            
-                .toggle-panel h1 {
-                    font-size: 30px;
-                }
-            
+            .toggle-panel h1 {
+                font-size: 1.3em;
+            }
+
+            .toggle-panel p {
+                font-size: 12px;
+            }
+
+            .toggle-panel .btn {
+                width: 120px;
+                height: 38px;
+                font-size: 14px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .input-box {
+                height: 42px;
+                margin: 12px 0;
+            }
+        }
+
+        /* LANDSCAPE MOBILE */
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+            .container {
+                height: 95vh;
+            }
+
+            .form-box {
+                height: 60%;
+                padding: 20px;
+                overflow-y: auto;
+            }
+
+            .container.active .form-box {
+                bottom: 40%;
+            }
+
+            .toggle-panel {
+                height: 40%;
+                padding: 15px;
+            }
+
+            .toggle-box::before {
+                top: -240%;
+                height: 280%;
+            }
+
+            .container.active .toggle-box::before {
+                top: 60%;
+            }
+
+            .toggle-panel.toggle-right {
+                bottom: -40%;
+            }
+
+            .container.active .toggle-panel.toggle-left {
+                top: -40%;
+            }
+
+            .toggle-panel h1 {
+                font-size: 1.2em;
+                margin-bottom: 5px;
+            }
+
+            .toggle-panel p {
+                font-size: 11px;
+                margin-bottom: 8px;
+            }
+
+            .logoFrame {
+                width: 60px;
+                padding: 6px;
+            }
+
+            h1 {
+                font-size: 22px;
+                margin-bottom: 15px;
+            }
+
+            .input-box {
+                height: 38px;
+                margin: 10px 0;
             }
         }
     </style>
 </head>
 <body>
     
-    <div class="container {{ request()->routeIs('register') || $errors->has('name') ? 'active' : '' }}" id="main-container">
+<div class="container {{ request()->routeIs('register') || $errors->has('name') ? 'active' : '' }}" id="main-container">
         
         <div class="form-box login">
             <form method="POST" action="{{ route('login') }}">
@@ -435,10 +546,6 @@
 
                 <div class="forgot-link"><a href="{{ route('password.request') }}">Lupa Password?</a></div>
                 <button type="submit" class="btn">Login</button>
-                <!-- <p>atau login dengan</p>
-                <div class="social-icons">
-                    <a href="{{ route('google.login') }}"><i class='bx bxl-google'></i></a>
-                </div> -->
             </form>
         </div>
 
@@ -470,16 +577,10 @@
                 </div>
                 
                 <button type="submit" class="btn">Daftar Sekarang</button>
-                <!-- <p>atau daftar dengan</p>
-                <div class="social-icons">
-                    <a href="{{ route('google.login') }}"><i class='bx bxl-google'></i></a>
-                </div> -->
             </form>
         </div>
 
-        <!-- === TOGGLE SLIDER (HEADER MOBILE / SIDEBAR DESKTOP) === -->
         <div class="toggle-box">
-            <!-- Panel Kiri (Ajak Login) -->
             <div class="toggle-panel toggle-left">
                 <div class="logoFrame">
                     <img src="{{asset('images/logo-new.png')}}" alt="Logo Unirow" class="logo">
@@ -489,8 +590,7 @@
                 <img src="{{asset('images/vector-panel1.png')}}" alt="Login Illustration" class="illustration">
                 <button class="btn registerBtn" id="loginBtn">Register</button>
             </div>
-            
-            <!-- Panel Kanan (Ajak Daftar) -->
+
             <div class="toggle-panel toggle-right">
                 <div class="logoFrame">
                     <img src="{{asset('images/logo-new.png')}}" alt="Logo Unirow" class="logo">
@@ -510,15 +610,11 @@
         const loginBtn = document.querySelector('.loginBtn');
 
         registerBtn.addEventListener('click', () => {
-            console.log('fbdfbdfbdsk')
             container.classList.add('active');
-            // window.history.pushState({}, '', '/register'); 
         });
 
         loginBtn.addEventListener('click', () => {
-            console.log('fbdfbdfbdsk')
             container.classList.remove('active');
-            // window.history.pushState({}, '', '/login'); 
         });
     </script>
 </body>
