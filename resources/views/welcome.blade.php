@@ -265,14 +265,11 @@
         }
 
         .logoFrame {
-            width: 150px;
-            padding: 12px;
+            width: 200px; 
+            padding: 10px 14px;
             border-radius: 20px;
             background: #e3e6eb;
-            box-shadow: 
-                6px 6px 15px rgba(0,0,0,0.15),
-                -6px -6px 15px rgba(255,255,255,0.8);
-
+            gap: 12px; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -280,8 +277,8 @@
         }
 
         .logo {
-            max-width: 100%;
-            max-height: 100%;
+            max-width: 120px; 
+            max-height: 40px;
             object-fit: contain; 
         }
 
@@ -371,9 +368,14 @@
             }
 
             .logoFrame {
-                width: 80px;
-                padding: 8px;
-                margin-bottom: 8px;
+                width: 140px;
+                padding: 6px 8px;
+                gap: 6px;
+            }
+
+            .logo {
+                max-width: 75px;
+                max-height: 28px;
             }
 
             .toggle-panel h1 {
@@ -583,6 +585,7 @@
         <div class="toggle-box">
             <div class="toggle-panel toggle-left">
                 <div class="logoFrame">
+                    <img src="{{asset('images/logo-unirow1.png')}}" alt="Logo Unirow" class="logo">
                     <img src="{{asset('images/logo-new.png')}}" alt="Logo Unirow" class="logo">
                 </div>
                 <h1>Selamat Datang!</h1>
@@ -593,6 +596,7 @@
 
             <div class="toggle-panel toggle-right">
                 <div class="logoFrame">
+                    <img src="{{asset('images/logo-unirow1.png')}}" alt="Logo Unirow" class="logo">
                     <img src="{{asset('images/logo-new.png')}}" alt="Logo Unirow" class="logo">
                 </div>
                 <h1>Hello, MABA!</h1>

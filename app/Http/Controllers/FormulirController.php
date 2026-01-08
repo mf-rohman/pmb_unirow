@@ -113,7 +113,9 @@ class FormulirController extends Controller
             $prodi = ProgramStudi::where('kode_prodi', $validate['program_studi_id_1'])->firstOrFail();
             $kodeFakultas = $prodi->fakultas->kode_fakultas;
             $kodeProdi = $prodi->kode_prodi;
-            $tahun = now()->format('Y');
+            $tahun = now()->format('y');
+            $kodeGelombang = $gelombangAktif->id;
+            $userIdEmpatDigit = str_pad($user->id, 4, '0', STR_PAD_LEFT);
 
             $dataBersih = Arr::except($validate, ['token_bk']);
 
@@ -121,7 +123,7 @@ class FormulirController extends Controller
                 'user_id' => Auth::id(),
                 'gelombang_id' => $gelombangAktif->id,
                 'email' => $user->email,
-                'no_pendaftaran'=> 'MABA-' . $user->id . $tahun . '-' . $kodeFakultas . $kodeProdi,
+                'no_pendaftaran'=> '07' . $tahun . $kodeGelombang . $userIdEmpatDigit,
                 'status' => 'draft',
 
                 ...$dataBersih

@@ -238,15 +238,18 @@ class PendaftarResource extends Resource
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'baru' => 'gray',
+                        'draft' => 'gray',
+                        'baru' => 'info',
                         'verifikasi_data' => 'warning',
                         'lulus' => 'success',
                         'gagal' => 'danger',
+                        default => 'gray', 
                     }),
             ])
             ->filters([
                 SelectFilter::make('status')
                     ->options([
+                        'draft' => 'Draft / Belum Upload',
                         'baru' => 'Baru',
                         'verifikasi_data' => 'Verifikasi',
                         'lulus' => 'Lulus',
